@@ -1,0 +1,59 @@
+## Create a self-signed Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+## Create our in-house CA certificate and key using our self-signed Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: in-house-ca
+spec:
+  isCA: true
+  duration: 43800h # 5 years
+  commonName: in-house-ca
+  secretName: in-house-ca
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer
+    group: cert-manager.io
+## Create an issuer from our in-house CA secret
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: in-house-ca
+spec:
+  ca:
+    secretName: in-house-ca
+## Create a PyKMIP Server Certificate from our in-house CA
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pykmip-server-certs
+spec:
+  ## secretName is alwayse required
+  secretName: pykmip-server-certs
+  commonName: pykmip-server
+  dnsNames:
+  - pykmip-server
+  subject:
+    organizationalUnits:
+      - MongoDB Test
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  usages:
+    - server auth
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: in-house-ca
+    kind: Issuer
+    group: cert-manager.io
