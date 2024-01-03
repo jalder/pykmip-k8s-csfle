@@ -32,7 +32,7 @@ metadata:
   name: pykmip-server
 spec:
   selector:
-    app.kubernetes.io/name: pykmip-server
+    app: pykmip-server
   ports:
     - protocol: TCP
       port: 5696
