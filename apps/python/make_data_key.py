@@ -28,7 +28,7 @@ connection_string = MONGODB_URI
 key_vault_coll = "__keyVault"
 key_vault_db = "encryption"
 key_vault_namespace = f"{key_vault_db}.{key_vault_coll}"
-key_vault_client = MongoClient(connection_string)
+key_vault_client = MongoClient(connection_string, tls=True, tlsCAFile='/etc/certs/ca.crt')
 # Drop the Key Vault Collection in case you created this collection
 # in a previous run of this application.
 key_vault_client.drop_database(key_vault_db)

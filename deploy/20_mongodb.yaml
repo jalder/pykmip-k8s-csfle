@@ -26,6 +26,8 @@ spec:
           db: admin
         - name: userAdminAnyDatabase
           db: admin
+        - name: root
+          db: admin
       scramCredentialsSecretName: mdb-user
   additionalMongodConfig:
     #KMIP Settings
