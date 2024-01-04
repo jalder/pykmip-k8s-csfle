@@ -21,7 +21,7 @@ helm repo add mongodb https://mongodb.github.io/helm-charts
 helm install community-operator mongodb/community-operator --namespace pymongo --create-namespace --set mongodb.name=mongodb-enterprise-server --set mongodb.repo=docker.io/mongodb
 ```
 
-3. Deploy the resource manifests in the ./deploy directory in numerical order
+3. Deploy the resource manifests in the ./deploy directory
 
 ```
 kubectl apply -f deploy/00_certificates.yaml -n pymongo
