@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-csfle
+  labels:
+    app: python-csfle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-csfle
+  template:
+    metadata:
+      labels:
+        app: python-csfle
+    spec:
+      containers:
+      - name: app
+        image: ubuntu
+        command: ["sh", "-c"]
+        args:
+        - |
+          apt-get update -y
+          apt-get install -y python3-dev libffi-dev libssl-dev python3-pip vim curl unzip
+          mkdir /app
+          cd /app
+          curl -OL https://github.com/jalder/pykmip-k8s-csfle/archive/refs/heads/main.zip
+          unzip main.zip
+          cd /app/pykmip-k8s-csfle-main/apps/python
+          cat /etc/certs/tls.key /etc/certs/tls.crt > /tmp/client.pem
+          pip install -r requirements.txt
+          ls -ahl
+          while true; do sleep 30; done
+        volumeMounts:
+        - name: certs
+          readOnly: true
+          mountPath: "/etc/certs"
+        env:
+        - name: KMIP_KMS_ENDPOINT
+          value: pykmip-server:5696
+        - name: KMIP_TLS_CERT_FILE
+          value: /tmp/client.pem
+        - name: KMIP_TLS_CA_FILE
+          value: /etc/certs/ca.crt 
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-admin-mdb-user
+              key: "connectionString.standard" 
+      volumes:
+      - name: certs
+        secret:
+          secretName: pykmip-client-certs
+

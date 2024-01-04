@@ -9,7 +9,7 @@ from bson.binary import STANDARD, UUID
 KMIP_KMS_ENDPOINT = os.getenv('KMIP_KMS_ENDPOINT')
 MONGODB_URI = os.getenv('MONGODB_URI')
 KMIP_TLS_CA_FILE = os.getenv('KMIP_TLS_CA_FILE')
-KMIP_TLS_CERT_FILE os.getenv('KMIP_TLS_CERT_FILE')
+KMIP_TLS_CERT_FILE = os.getenv('KMIP_TLS_CERT_FILE')
 
 # start-kmsproviders
 provider = "kmip"
@@ -56,7 +56,7 @@ key_vault_database = "encryption"
 key_vault_collection = "__keyVault"
 key_vault_namespace = f"{key_vault_database}.{key_vault_collection}"
 
-client = MongoClient(connection_string)
+client = MongoClient(connection_string, tls=True, tlsCAFile='/etc/certs/ca.crt')
 client_encryption = ClientEncryption(
     kms_providers,  # pass in the kms_providers variable from the previous step
     key_vault_namespace,
