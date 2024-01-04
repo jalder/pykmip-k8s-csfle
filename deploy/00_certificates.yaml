@@ -57,3 +57,31 @@ spec:
     name: in-house-ca
     kind: Issuer
     group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mongodb-server-certs
+spec:
+  ## secretName is alwayse required
+  secretName: mongodb-server-certs
+  commonName: mongodb-0
+  dnsNames:
+  - "mongodb-0"
+  - "*.mongodb-svc.pymongo.svc.cluster.local"
+  subject:
+    organizationalUnits:
+      - MongoDB Test
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  usages:
+    - server auth
+    - client auth
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: in-house-ca
+    kind: Issuer
+    group: cert-manager.io

@@ -1,0 +1,48 @@
+---
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: mongodb
+spec:
+  members: 1
+  type: ReplicaSet
+  version: "6.0.11"
+  security:
+    authentication:
+      modes: ["SCRAM"]
+    tls:
+      enabled: true
+      certificateKeySecretRef:
+        name: mongodb-server-certs
+      caCertificateSecretRef:
+        name: in-house-ca
+  users:
+    - name: mdb-user
+      db: admin
+      passwordSecretRef: # a reference to the secret that will be used to generate the user's password
+        name: mdb-user-password
+      roles:
+        - name: clusterAdmin
+          db: admin
+        - name: userAdminAnyDatabase
+          db: admin
+      scramCredentialsSecretName: mdb-user
+  additionalMongodConfig:
+    #KMIP Settings
+    security.enableEncryption: "true"
+    security.kmip.serverName: pykmip-server
+    security.kmip.port: 5696
+    ## To Do: these hashes change on cert renewals.  We might need to just create our own pems manually which makes cert rotations difficult as it's not automated by the operator.
+    security.kmip.clientCertificateFile: /var/lib/tls/server/74f69c0affc65e99486f2c3aceaafd0f5098bbac64fc2febf0bcd3ce10a744b4.pem
+    security.kmip.serverCAFile: /var/lib/tls/ca/827f3d61540b42285df26881dedb1905b5fe520c33af19be9ff3e4618bf0a571.pem
+
+# the user credentials will be generated from this secret
+# once the credentials are generated, this secret is no longer required
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mdb-user-password
+type: Opaque
+stringData:
+  password: hunter2
