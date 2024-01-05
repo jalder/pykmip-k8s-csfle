@@ -25,6 +25,8 @@ spec:
           apt-get install -y python3-dev libffi-dev libssl-dev python3-pip vim curl unzip
           mkdir /app
           cd /app
+          curl -OL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-6.0.12.tgz
+          tar zxvf mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-6.0.12.tgz
           curl -OL https://github.com/jalder/pykmip-k8s-csfle/archive/refs/heads/main.zip
           unzip main.zip
           cd /app/pykmip-k8s-csfle-main/apps/python

@@ -42,6 +42,7 @@ spec:
   commonName: pykmip-server
   dnsNames:
   - pykmip-server
+  - localhost
   subject:
     organizationalUnits:
       - MongoDB Test
@@ -51,8 +52,8 @@ spec:
     - server auth
   isCA: false
   privateKey:
-    algorithm: RSA
-    size: 2048
+    algorithm: ECDSA
+    size: 384
   issuerRef:
     name: in-house-ca
     kind: Issuer
@@ -69,6 +70,7 @@ spec:
   dnsNames:
   - "mongodb-0"
   - "*.mongodb-svc.pymongo.svc.cluster.local"
+  - localhost
   subject:
     organizationalUnits:
       - MongoDB Test

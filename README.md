@@ -12,7 +12,7 @@ Consider using docker desktop, k3s, or k3d to deploy a k8s cluster on your works
 
 2. cert-manager
 
-Install cert-manager in your k8s clusters and configure it to watch all namespaces.
+Install cert-manager in your k8s cluster and configure it to watch all namespaces.
 
 3. MongoDB Kubernetes Operator (Community)
 
@@ -36,6 +36,10 @@ kubectl apply -f deploy/20_mongodb.yaml -n pymongo
 ### CSFLE
 
 1. Apply test app deployments, tools are available in the container images.
+
+### Compass
+
+Use port-forward to both the mongodb primary and the pykmip server for Compass to use locally on the workstation (outside of the cluster).
 
 ### FAQ
 
