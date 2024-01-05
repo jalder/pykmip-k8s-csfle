@@ -10,7 +10,11 @@ This project deploys a PyKMIP server, MongoDB enterprise replica set with KMIP e
 
 Consider using docker desktop, k3s, or k3d to deploy a k8s cluster on your workstation.
 
-2. MongoDB Kubernetes Operator (Community)
+2. cert-manager
+
+Install cert-manager in your k8s clusters and configure it to watch all namespaces.
+
+3. MongoDB Kubernetes Operator (Community)
 
 We will use the Community Operator to avoid the overhead of running Ops Manager on your workstation.  For this demonstration, I am using the pymongo namespace in my test cluster.
 
@@ -21,7 +25,7 @@ helm repo add mongodb https://mongodb.github.io/helm-charts
 helm install community-operator mongodb/community-operator --namespace pymongo --create-namespace --set mongodb.name=mongodb-enterprise-server --set mongodb.repo=docker.io/mongodb
 ```
 
-3. Deploy the resource manifests in the ./deploy directory
+4. Deploy the resource manifests in the ./deploy directory
 
 ```
 kubectl apply -f deploy/00_certificates.yaml -n pymongo
@@ -29,17 +33,9 @@ kubectl apply -f deploy/10_pykmip_server.yaml -n pymongo
 kubectl apply -f deploy/20_mongodb.yaml -n pymongo
 ```
 
-4. Patch the MongoDBCommunity resource KMIP settings when certificates rotate (and after initial deploy)
+### CSFLE
 
-```
-MDBC=mongodb; NS=pymongo;
-MDBSERVERCERT=$(kubectl get secrets -n $NS $MDBC-server-certificate-key -o go-template='{{ range $key, $value := .data }}{{ print "/var/lib/tls/server/" $key }}{{ end }}')
-MDBCACERT=$(kubectl get secrets -n $NS $MDBC-ca-certificate -o go-template='{{ range $key, $value := .data }}{{ print "/var/lib/tls/ca/" $key }}{{ end }}')
-kubectl patch mdbc --type=merge -n $NS $MDBC -p '{"spec":{"additionalMongodConfig":{"security.kmip.clientCertificateFile":"'$MDBSERVERCERT'", "security.kmip.serverCAFile": "'$MDBCACERT'"}}}'
-
-##Optional, bounce the pod if it's in a Crash Loop Backoff due to missing KMIP TLS cert
-kubectl delete pod -n $NS $MDBC-0
-```
+1. Apply test app deployments, tools are available in the container images.
 
 ### FAQ
 

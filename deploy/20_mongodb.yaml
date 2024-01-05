@@ -16,6 +16,23 @@ spec:
         name: mongodb-server-certs
       caCertificateSecretRef:
         name: in-house-ca
+  statefulSet:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongod
+            lifecycle:
+              postStart:
+                exec:
+                  command: ["/bin/sh", "-c", "cat /etc/kmip/tls.crt /etc/kmip/tls.key > /tmp/kmip_client.pem"]
+            volumeMounts:
+            - name: kmip
+              mountPath: /etc/kmip
+          volumes:
+          - name: kmip
+            secret:
+              secretName: mongodb-server-certs
   users:
     - name: mdb-user
       db: admin
@@ -35,8 +52,8 @@ spec:
     security.kmip.serverName: pykmip-server
     security.kmip.port: 5696
     ## To Do: these hashes change on cert renewals.  We might need to just create our own pems manually which makes cert rotations difficult as it's not automated by the operator.
-    security.kmip.clientCertificateFile: /var/lib/tls/server/74f69c0affc65e99486f2c3aceaafd0f5098bbac64fc2febf0bcd3ce10a744b4.pem
-    security.kmip.serverCAFile: /var/lib/tls/ca/827f3d61540b42285df26881dedb1905b5fe520c33af19be9ff3e4618bf0a571.pem
+    security.kmip.clientCertificateFile: /tmp/kmip_client.pem
+    security.kmip.serverCAFile: /etc/kmip/ca.crt
 
 # the user credentials will be generated from this secret
 # once the credentials are generated, this secret is no longer required
