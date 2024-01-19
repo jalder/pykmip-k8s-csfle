@@ -44,7 +44,7 @@ From Compass UI or mongosh:
 ]
 ```
 
-[Compass CSFLE Docs](./Compass-test.png)
+![Compass CSFLE Docs](./Compass-test.png)
 
 ### Notes
 Server side enforcement:
