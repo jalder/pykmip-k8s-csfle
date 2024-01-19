@@ -1,0 +1,9 @@
+version: '3'
+services:
+  mongodb:
+    image: mongodb/mongodb-enterprise-server
+    platform: linux/arm64
+  app:
+    image: node:18.19.0-bullseye
+    platform: linux/amd64
+    command: bash -c "while true; do sleep 5; done"
